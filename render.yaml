@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: cyber-panel
+    env: python
+    buildCommand: |
+      pip install -r requirements.txt
+      npm install
+      npm run build
+    startCommand: |
+      gunicorn --bind 0.0.0.0:$PORT app:app
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_USER1
+        value: angel0chek
+      - key: ADMIN_PASS1
+        generateValue: true
+      - key: ADMIN_USER2
+        value: winter
+      - key: ADMIN_PASS2
+        generateValue: true
+      - key: UPLOAD_API_KEY
+        generateValue: true
